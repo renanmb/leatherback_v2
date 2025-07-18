@@ -44,6 +44,21 @@ It allows you to develop in an isolated environment, outside of the core Isaac L
         python scripts/<RL_LIBRARY>/train.py --task=<TASK_NAME>
         ```
 
+    - Training:
+
+        ```bash
+        # use 'FULL_PATH_TO_isaaclab.sh|bat -p' instead of 'python' if Isaac Lab is not installed in Python venv or conda
+        python scripts/skrl/train.py --task Leatherback-Direct-v0 --headless
+        ```
+    
+    - Running trained model:
+
+        ```bash
+        # use 'FULL_PATH_TO_isaaclab.sh|bat -p' instead of 'python' if Isaac Lab is not installed in Python venv or conda
+        python scripts/skrl/play.py --task Leatherback-Direct-v0 --num_envs 32
+        ```
+    
+
     - Running a task with dummy agents:
 
         These include dummy agents that output zero or random agents. They are useful to ensure that the environments are configured correctly.
