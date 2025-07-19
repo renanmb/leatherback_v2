@@ -1,6 +1,22 @@
 # logging
 
-During training the rsl_rl the following happens:
+Must add an extension to do the ackermann or add a bespoke Ackermann controller
+
+The idea is to force the model to constrain itself to realistic values.
+
+Isaaclab extension development:
+
+https://isaac-sim.github.io/IsaacLab/main/source/overview/developer-guide/development.html
+
+Isaaclab Extension template:
+
+https://github.com/isaac-sim/IsaacLabExtensionTemplate
+
+
+
+## OOM Error
+
+During training the rsl_rl the following OOM happens:
 
 ```bash
 ################################################################################

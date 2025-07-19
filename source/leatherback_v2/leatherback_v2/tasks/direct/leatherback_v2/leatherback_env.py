@@ -134,9 +134,9 @@ class LeatherbackEnv(DirectRLEnv):
         Multiplier for the throttle velocity.
         Multiplier for the steering position. 
         The actions should be in the range [-1, 1] and the radius of the wheel is 0.06m"""
-        throttle_scale = 10 # when set to 2 it trains but the cars are flying, 3 you get NaNs
+        throttle_scale = 5 # when set to 2 it trains but the cars are flying, 3 you get NaNs
         throttle_max = 50.0 # throttle_max = 60.0
-        steering_scale = 0.1 # steering_scale = math.pi / 4.0
+        steering_scale = 0.01 # steering_scale = math.pi / 4.0
         steering_max = 0.75
         # region Logging
         if self.enable_csv_logging:
