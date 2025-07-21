@@ -1,5 +1,15 @@
 # logging
 
+Interesting reading:
+
+Best Practices when training with PPO
+
+https://github.com/EmbersArc/PPO/blob/master/best-practices-ppo.md
+
+Comparing Deterministic and Soft Policy Gradients for Optimizing Gaussian Mixture Actors
+
+https://openreview.net/forum?id=qS9pPu8ODt
+
 Must add an extension to do the ackermann or add a bespoke Ackermann controller
 
 The idea is to force the model to constrain itself to realistic values.
@@ -24,6 +34,26 @@ Batch Normalization
 
 ## Clip Actions
 
+The clip actions only help to match the expected values by the controller, adding logic at this point does not seem to have any massive benefit.
+
+
+[Question] Lift Task with UR10e and Robotiq 2F-140 #2932
+
+https://github.com/isaac-sim/IsaacLab/discussions/2932
+
+In this question they address several optimization and tuning ideas
+
+It can still be improved but hyperparameter tuning will only get so far, the oscillations are common and must be accounted by the hardware. The problem seems to be the actor and samples exploration noise which methods like GMMs do seem to offer major improvements. 
+
+Clips actions to large limits before applying them to the environment #984
+
+https://github.com/isaac-sim/IsaacLab/pull/984
+
+They added the clipping to the rsl_rl however it does not seem to be the magical bullet
+
+Adds action clipping to rsl-rl wrapper
+
+https://github.com/ToxicNS/IsaacLab/commit/753460c02fddac95bf7e490c78ee5da8391c204c
 
 ## OOM Error
 

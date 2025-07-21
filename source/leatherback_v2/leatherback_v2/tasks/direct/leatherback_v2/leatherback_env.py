@@ -60,7 +60,7 @@ class LeatherbackEnv(DirectRLEnv):
         # region Logger
         # Init for Logger
         # this dont work really well
-        self.enable_csv_logging = False  # Set to False to disable logging
+        self.enable_csv_logging = True  # Set to False to disable logging
         # done using the YAML for the env config
         # self.enable_csv_logging = getattr(self.cfg, "enable_csv_logging", True)
         # Possibly add a CLI args ?
@@ -143,19 +143,19 @@ class LeatherbackEnv(DirectRLEnv):
             # Compute observation here temporarily
             obs = self._get_observations()["policy"]
             self._log_observations_to_csv(obs, actions)
-        # print(actions)
+        print(f"Actions: {actions}")
 
         self._throttle_action = actions[:, 0].repeat_interleave(4).reshape((-1, 4)) * throttle_scale
         # self._throttle_action += self._throttle_state 
         self.throttle_action = torch.clamp(self._throttle_action, -throttle_max, throttle_max * 1) # negative goes forward and positive goes backward
         self._throttle_state = self.throttle_action
-        # print(self.throttle_action)
+        print(f"throttle_action: {self.throttle_action}")
 
         self._steering_action = actions[:, 1].repeat_interleave(2).reshape((-1, 2)) * steering_scale # Must add a smooth curve ??
         # self._steering_action += self._steering_state
         self.steering_action = torch.clamp(self._steering_action, -steering_max, steering_max)
         self._steering_state = self.steering_action
-        # print(self._steering_action)
+        print(f"_steering_action: {self._steering_action}")
     #     # Log data
     #     self.scalar_logger.log("robot_state", "AVG/throttle_action", self._throttle_action[:, 0])
     #     self.scalar_logger.log("robot_state", "AVG/steering_action", self._steering_action[:, 0])
@@ -431,3 +431,6 @@ def compute_rewards(
         raise ValueError("Rewards cannot be NAN")
 
     return composite_reward, task_completed, _target_index
+
+# TODO
+# Add some type of reward penalty
