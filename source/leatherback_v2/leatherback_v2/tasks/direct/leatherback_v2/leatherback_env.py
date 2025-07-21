@@ -136,30 +136,33 @@ class LeatherbackEnv(DirectRLEnv):
         The actions should be in the range [-1, 1] and the radius of the wheel is 0.06m"""
         throttle_scale = 5 # when set to 2 it trains but the cars are flying, 3 you get NaNs
         throttle_max = 50.0 # throttle_max = 60.0
-        steering_scale = 0.01 # steering_scale = math.pi / 4.0
+        steering_scale = 0.01 #0.01 # steering_scale = math.pi / 4.0
         steering_max = 0.75
         # region Logging
         if self.enable_csv_logging:
             # Compute observation here temporarily
             obs = self._get_observations()["policy"]
             self._log_observations_to_csv(obs, actions)
-        
+        # print(actions)
+
         self._throttle_action = actions[:, 0].repeat_interleave(4).reshape((-1, 4)) * throttle_scale
         # self._throttle_action += self._throttle_state 
-        self.throttle_action = torch.clamp(self._throttle_action, -throttle_max, throttle_max * 0.1) # negative goes forward and positive goes backward
-        self._throttle_state = self._throttle_action
-        
-        self._steering_action = actions[:, 1].repeat_interleave(2).reshape((-1, 2)) * steering_scale
+        self.throttle_action = torch.clamp(self._throttle_action, -throttle_max, throttle_max * 1) # negative goes forward and positive goes backward
+        self._throttle_state = self.throttle_action
+        # print(self.throttle_action)
+
+        self._steering_action = actions[:, 1].repeat_interleave(2).reshape((-1, 2)) * steering_scale # Must add a smooth curve ??
         # self._steering_action += self._steering_state
-        self._steering_action = torch.clamp(self._steering_action, -steering_max, steering_max)
-        self._steering_state = self._steering_action
+        self.steering_action = torch.clamp(self._steering_action, -steering_max, steering_max)
+        self._steering_state = self.steering_action
+        # print(self._steering_action)
     #     # Log data
     #     self.scalar_logger.log("robot_state", "AVG/throttle_action", self._throttle_action[:, 0])
     #     self.scalar_logger.log("robot_state", "AVG/steering_action", self._steering_action[:, 0])
     # end region _pre_physics_step
 
     def _apply_action(self) -> None:
-        self.leatherback.set_joint_velocity_target(self._throttle_action, joint_ids=self._throttle_dof_idx)
+        self.leatherback.set_joint_velocity_target(self.throttle_action, joint_ids=self._throttle_dof_idx)
         self.leatherback.set_joint_position_target(self._steering_state, joint_ids=self._steering_dof_idx)
     
     # region _get_observations
@@ -296,9 +299,13 @@ class LeatherbackEnv(DirectRLEnv):
         # Randomize Steering position at start of track
         leatherback_pose[:, 0] -= self.env_spacing / 2
         leatherback_pose[:, 1] += 2.0 * torch.rand((num_reset), dtype=torch.float32, device=self.device) * self.course_width_coefficient
+        # pose at zero on Y-axis
+        # leatherback_pose[:, 1] += 0
 
         # Randomize Starting Heading
         angles = torch.pi / 6.0 * torch.rand((num_reset), dtype=torch.float32, device=self.device)
+        # set angle to zero which should be the X-axis
+        # angles = torch.zeros((num_reset), dtype=torch.float32, device=self.device)
 
         # Isaac Sim Quaternions are w first (w, x, y, z) To rotate about the Z axis, we will modify the W and Z values
         leatherback_pose[:, 3] = torch.cos(angles * 0.5)
@@ -316,7 +323,10 @@ class LeatherbackEnv(DirectRLEnv):
         spacing = 2 / self._num_goals
         target_positions = torch.arange(-0.8, 1.1, spacing, device=self.device) * self.env_spacing / self.course_length_coefficient
         self._target_positions[env_ids, :len(target_positions), 0] = target_positions
+        # varies the target position in th Y-axis
         self._target_positions[env_ids, :, 1] = torch.rand((num_reset, self._num_goals), dtype=torch.float32, device=self.device) + self.course_length_coefficient
+        # Generate same track straight line
+        # self._target_positions[env_ids, :, 1] = 0
         self._target_positions[env_ids, :] += self.scene.env_origins[env_ids, :2].unsqueeze(1)
 
         self._target_index[env_ids] = 0

@@ -12,6 +12,17 @@ Isaaclab Extension template:
 
 https://github.com/isaac-sim/IsaacLabExtensionTemplate
 
+## Improving Policy
+
+Clipping Mechanism, Generalized Advantage Estimation, Adaptive Learning Rate, Reward Shaping, Reward Normalization/Clipping, Noise-Robust Reward Functions, 
+
+
+Value network instability, Separate Learning Rates, Increased Training, Gradient Clipping
+
+Batch Normalization
+
+
+## Clip Actions
 
 
 ## OOM Error
